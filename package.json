@@ -1,0 +1,17 @@
+{
+  "name": "bothub-download",
+  "version": "1.0.0",
+  "description": "Bot Download Website with Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.36.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.4"
+  }
+}

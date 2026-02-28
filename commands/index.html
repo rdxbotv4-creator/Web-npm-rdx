@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commands - BotHub</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #1a1a2e; color: white; min-height: 100vh; }
+        
+        .navbar {
+            background: #0f0f23;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .logo { font-size: 24px; font-weight: 700; color: #e94560; }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .nav-links a:hover { color: #e94560; }
+        
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 20px;
+        }
+        h1 { text-align: center; font-size: 36px; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 40px; }
+        
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            display: flex;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            background: #16213e;
+            color: white;
+            outline: none;
+        }
+        
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .category-tab {
+            padding: 10px 20px;
+            background: #16213e;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .category-tab:hover, .category-tab.active {
+            background: #e94560;
+        }
+        
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .command-card {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .command-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(233, 69, 96, 0.1), transparent);
+            transition: 0.5s;
+        }
+        .command-card:hover::before {
+            left: 100%;
+        }
+        .command-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+        }
+        .command-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .command-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .command-name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .command-category {
+            font-size: 12px;
+            color: #888;
+            background: #0f3460;
+            padding: 3px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .command-desc {
+            color: #aaa;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .command-usage {
+            background: #0f0f23;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #4ade80;
+            margin-bottom: 15px;
+        }
+        
+        .command-date {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+        .command-date i {
+            color: #e94560;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+        
+        .no-commands {
+            text-align: center;
+            color: #888;
+            padding: 50px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #e94560;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #16213e;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .modal-close:hover {
+            color: #e94560;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e94560, #0f3460);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .modal-category {
+            font-size: 14px;
+            color: #888;
+            background: #0f3460;
+            padding: 5px 15px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .modal-desc {
+            color: #ccc;
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .modal-usage {
+            background: #0f0f23;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #4ade80;
+            margin-bottom: 25px;
+        }
+        .modal-code {
+            background: #0f0f23;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #aaa;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .modal-btn-download {
+            background: #e94560;
+            color: white;
+        }
+        .modal-btn-download:hover {
+            background: #d63850;
+            transform: translateY(-2px);
+        }
+        .modal-btn-copy {
+            background: #0f3460;
+            color: white;
+        }
+        .modal-btn-copy:hover {
+            background: #1a4a7a;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar { padding: 15px; }
+            .nav-links { display: none; }
+            .container { padding: 15px; margin-top: 80px; }
+            h1 { font-size: 28px; }
+            .modal { padding: 20px; }
+            .modal-title { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">BotHub</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/features.html">Features</a>
+            <a href="/commands/">Commands</a>
+            <a href="/about.html">About</a>
+            <a href="/contact.html">Contact</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>Bot Commands</h1>
+        <p class="subtitle">Browse and download all available commands for your bot</p>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search commands..." oninput="filterCommands()">
+        </div>
+        
+        <div class="category-tabs" id="categoryTabs">
+            <button class="category-tab active" onclick="filterCategory('all')">All</button>
+        </div>
+        
+        <div class="commands-grid" id="commandsGrid">
+            <div class="loading">Loading commands...</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="commandModal">
+        <div class="modal">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-terminal" id="modalIcon"></i>
+                </div>
+                <div>
+                    <div class="modal-title" id="modalTitle">Command Name</div>
+                    <span class="modal-category" id="modalCategory">Category</span>
+                </div>
+            </div>
+            <p class="modal-desc" id="modalDesc">Command description</p>
+            <div class="modal-usage" id="modalUsage">/command</div>
+            <div class="modal-code" id="modalCode">Loading code...</div>
+            <div class="command-date" id="modalDate">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Added: </span>
+            </div>
+            <div class="modal-actions">
+                <a href="#" class="modal-btn modal-btn-download" id="modalDownload" download>
+                    <i class="fas fa-download"></i> Download
+                </a>
+                <button class="modal-btn modal-btn-copy" onclick="copyModalCode()">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // SOUND EFFECTS
+        // ============================================
+        let buttonSound = null;
+        let soundsLoaded = false;
+
+        function preloadSounds() {
+            try {
+                buttonSound = new Audio('/sounds/buttons.mpeg');
+                soundsLoaded = true;
+            } catch(e) {
+                console.log('Error loading sounds:', e);
+            }
+        }
+
+        function playButtonSound() {
+            if (!soundsLoaded) preloadSounds();
+            if (buttonSound) {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.5;
+                buttonSound.play().catch(e => {});
+            }
+        }
+
+        // Global click handler
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            const tag = target.tagName.toLowerCase();
+            const isClickable = tag === 'button' || tag === 'a' || target.closest('button') || target.closest('a');
+            
+            if (isClickable && !target.closest('.no-sound')) {
+                playButtonSound();
+            }
+        }, true);
+
+        window.addEventListener('load', preloadSounds);
+
+        // ============================================
+        // COMMANDS PAGE
+        // ============================================
+        let allCommands = [];
+        let currentCommandCode = '';
+        
+        async function loadCommands() {
+            try {
+                const response = await fetch('/api/commands');
+                const data = await response.json();
+                
+                if (data.success && data.commands) {
+                    allCommands = data.commands;
+                    displayCategories(allCommands);
+                    displayCommands(allCommands);
+                } else {
+                    document.getElementById('commandsGrid').innerHTML = 
+                        '<div class="no-commands">No commands found</div>';
+                }
+            } catch (error) {
+                console.error('Error loading commands:', error);
+                document.getElementById('commandsGrid').innerHTML = 
+                    '<div class="no-commands">Error loading commands</div>';
+            }
+        }
+        
+        function displayCategories(commands) {
+            const categories = [...new Set(commands.map(c => c.category || 'utility'))];
+            const tabsContainer = document.getElementById('categoryTabs');
+            tabsContainer.innerHTML = `
+                <button class="category-tab active" onclick="filterCategory('all')">All</button>
+                ${categories.map(cat => 
+                    `<button class="category-tab" onclick="filterCategory('${cat}')">${capitalize(cat)}</button>`
+                ).join('')}
+            `;
+        }
+        
+        function displayCommands(commands) {
+            const grid = document.getElementById('commandsGrid');
+            
+            if (commands.length === 0) {
+                grid.innerHTML = '<div class="no-commands">No commands found</div>';
+                return;
+            }
+            
+            grid.innerHTML = commands.map((cmd, index) => `
+                <div class="command-card" onclick="openCommandModal('${cmd.name}')" style="animation-delay: ${index * 0.1}s">
+                    <div class="command-header">
+                        <div class="command-icon">
+                            <i class="fas fa-${cmd.icon || 'terminal'}"></i>
+                        </div>
+                        <div>
+                            <div class="command-name">
+                                ${cmd.name || 'Unknown'}
+                                ${cmd.premium ? '<span class="premium-badge">PREMIUM</span>' : ''}
+                            </div>
+                            <span class="command-category">${capitalize(cmd.category || 'utility')}</span>
+                        </div>
+                    </div>
+                    <p class="command-desc">${cmd.description || 'No description'}</p>
+                    <div class="command-usage">${cmd.usage || '/' + (cmd.name || 'command')}</div>
+                    <div class="command-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Added: ${cmd.createdAt || 'Recently'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function openCommandModal(commandName) {
+            const modal = document.getElementById('commandModal');
+            const cmd = allCommands.find(c => c.name === commandName);
+            
+            if (!cmd) return;
+            
+            document.getElementById('modalTitle').textContent = cmd.name || 'Unknown';
+            document.getElementById('modalCategory').textContent = capitalize(cmd.category || 'utility');
+            document.getElementById('modalDesc').textContent = cmd.description || 'No description';
+            document.getElementById('modalUsage').textContent = cmd.usage || '/' + (cmd.name || 'command');
+            document.getElementById('modalIcon').className = 'fas fa-' + (cmd.icon || 'terminal');
+            document.getElementById('modalDate').innerHTML = '<i class="fas fa-calendar-alt"></i><span>Added: ' + (cmd.createdAt || 'Recently') + '</span>';
+            document.getElementById('modalDownload').href = '/api/command/' + encodeURIComponent(cmd.name) + '.js?download=true';
+            
+            try {
+                const response = await fetch('/api/command/' + encodeURIComponent(cmd.name) + '.js');
+                const data = await response.json();
+                
+                if (data.success && data.code) {
+                    currentCommandCode = data.code;
+                    document.getElementById('modalCode').textContent = data.code;
+                } else {
+                    currentCommandCode = '// Code not available';
+                    document.getElementById('modalCode').textContent = '// Code not available';
+                }
+            } catch (error) {
+                currentCommandCode = '// Error loading code';
+                document.getElementById('modalCode').textContent = '// Error loading code';
+            }
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('commandModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        function copyModalCode() {
+            if (currentCommandCode) {
+                navigator.clipboard.writeText(currentCommandCode).then(() => {
+                    alert('Code copied to clipboard!');
+                });
+            }
+        }
+        
+        function filterCategory(category) {
+            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (category === 'all') {
+                displayCommands(allCommands);
+            } else {
+                const filtered = allCommands.filter(cmd => 
+                    (cmd.category || 'utility') === category
+                );
+                displayCommands(filtered);
+            }
+        }
+        
+        function filterCommands() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const activeTab = document.querySelector('.category-tab.active');
+            const category = activeTab ? activeTab.textContent.toLowerCase() : 'all';
+            
+            let filtered = allCommands;
+            
+            if (category !== 'all') {
+                filtered = filtered.filter(cmd => 
+                    (cmd.category || 'utility') === category
+                );
+            }
+            
+            if (search) {
+                filtered = filtered.filter(cmd => 
+                    (cmd.name || '').toLowerCase().includes(search) ||
+                    (cmd.description || '').toLowerCase().includes(search)
+                );
+            }
+            
+            displayCommands(filtered);
+        }
+        
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('commandModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+        
+        loadCommands();
+    </script>
+</body>
+</html>

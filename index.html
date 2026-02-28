@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDX Bot - Premium Automation Tool</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary-color: #1877F2;
+            --primary-hover: #166FE5;
+            --secondary-color: #42b72a;
+            --accent-color: #f02849;
+            --success-color: #10b981;
+            --dark-bg: #0a0a1a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--dark-bg);
+            background-image:
+                radial-gradient(ellipse at top left, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at top right, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+                linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Welcome Animation */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 1s ease 2s forwards;
+        }
+
+        .welcome-overlay .logo {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: bounceIn 0.8s ease;
+        }
+
+        .welcome-overlay p {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            animation: slideUp 0.6s ease 0.3s both;
+        }
+
+        .welcome-overlay .user-welcome {
+            font-size: 1.2rem;
+            color: var(--success-color);
+            margin-top: 10px;
+            animation: slideUp 0.6s ease 0.6s both;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ============================================
+           HEADER STYLES
+           ============================================ */
+        header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 26, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+        }
+
+        nav {
+            display: none;
+            /* Hidden - using right menu instead */
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(24, 119, 242, 0.2);
+            border-color: rgba(24, 119, 242, 0.4);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Show menu toggle on all screens */
+        @media (max-width: 9999px) {
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        /* ============================================
+           RIGHT SIDE MENU BAR
+           ============================================ */
+        .right-menu {
+            position: fixed;
+            right: -220px;
+            top: 0;
+            height: 100vh;
+            width: 220px;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding-top: 80px;
+            gap: 5px;
+            transition: right 0.3s ease;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .right-menu.open {
+            right: 0;
+        }
+
+        .right-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .right-menu-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .right-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            margin: 0 10px;
+            border-radius: 8px;
+        }
+
+        .right-menu-item i {
+            width: 24px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .right-menu-item:hover {
+            background: rgba(24, 119, 242, 0.15);
+            color: var(--text-primary);
+            border-left-color: var(--primary-color);
+            padding-left: 30px;
+        }
+
+        .right-menu-item.active {
+            background: rgba(24, 119, 242, 0.2);
+            color: var(--text-primary);
+            border-left-color: var(--primary-color);
+        }
+
+        /* Logout button special style */
+        .right-menu-item.logout {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+
+        .right-menu-item.logout:hover {
+            background: rgba(240, 40, 73, 0.15);
+            border-left-color: #f02849;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(37, 211, 102, 0.2);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #1877F2;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 0.6s ease-out, glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(37, 211, 102, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(37, 211, 102, 0.6);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+            background: linear-gradient(135deg, #1877F2, #166FE5, #42b72a, #1877F2);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease-out, gradient-shift 5s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .hero h1 span {
+            /* Gradient moved to h1 */
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.6s ease-out 0.2s backwards;
+        }
+
+        /* ============================================
+           USER COUNT SECTION
+           ============================================ */
+        .user-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.6s ease-out 0.3s backwards;
+        }
+
+        .stat-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 15px 25px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(24, 119, 242, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .stat-item:active {
+            animation: statClick 0.4s ease;
+        }
+
+        @keyframes statClick {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.95);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .stat-item.glow {
+            animation: glowPulse 0.6s ease;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(24, 119, 242, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(24, 119, 242, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(24, 119, 242, 0);
+            }
+        }
+
+        .section-title span {
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================
+           BUTTON STYLES
+           ============================================ */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.4s backwards;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            color: white;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-download::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-download:hover::before {
+            left: 100%;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(37, 211, 102, 0.5), 0 0 30px rgba(24, 119, 242, 0.4);
+        }
+
+        .btn-download:active {
+            animation: buttonGlow 0.3s ease;
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(24, 119, 242, 0.7);
+            }
+
+            100% {
+                box-shadow: 0 0 30px 10px rgba(24, 119, 242, 0);
+            }
+        }
+
+        .btn-download i {
+            font-size: 1.3rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-5px);
+            }
+
+            60% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary:active {
+            animation: buttonGlowSecondary 0.3s ease;
+        }
+
+        @keyframes buttonGlowSecondary {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+
+            100% {
+                box-shadow: 0 0 25px 10px rgba(139, 92, 246, 0);
+            }
+        }
+
+        /* ============================================
+           SOCIAL MEDIA LINKS
+           ============================================ */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 4rem;
+            animation: fadeInUp 0.6s ease-out 0.5s backwards;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            color: var(--text-primary);
+        }
+
+        .social-link.messenger:hover {
+            background: #1877F2;
+            border-color: #1877F2;
+            box-shadow: 0 10px 30px rgba(24, 119, 242, 0.4);
+        }
+
+        .social-link.facebook:hover {
+            background: #1877F2;
+            border-color: #1877F2;
+            box-shadow: 0 10px 30px rgba(24, 119, 242, 0.4);
+        }
+
+        .social-link.messenger:hover {
+            background: #1877F2;
+            border-color: #1877F2;
+            box-shadow: 0 10px 30px rgba(24, 119, 242, 0.4);
+        }
+
+        .social-link.instagram:hover {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            border-color: transparent;
+            box-shadow: 0 10px 30px rgba(225, 48, 108, 0.4);
+        }
+
+        .social-link.youtube:hover {
+            background: #FF0000;
+            border-color: #FF0000;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4);
+        }
+
+        .social-link.whatsapp:hover {
+            background: #25D366;
+            border-color: #25D366;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+        }
+
+        .social-link.whatsapp-channel:hover {
+            background: #128C7E;
+            border-color: #128C7E;
+            box-shadow: 0 10px 30px rgba(18, 140, 126, 0.4);
+        }
+
+        /* ============================================
+           FEATURES SECTION
+           ============================================ */
+        .features {
+            padding: 5rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        .section-title span {
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #1877F2;
+            box-shadow: 0 20px 40px rgba(24, 119, 242, 0.3);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            border-radius: 16px;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           FLOATING PARTICLES
+           ============================================ */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(24, 119, 242, 0.4);
+            border-radius: 50%;
+            animation: particle-float 15s infinite linear;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1877F2;
+        }
+
+        /* ============================================
+           MODAL STYLES
+           ============================================ */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: fadeInUp 0.3s ease-out;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-content .close:hover {
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: #1877F2;
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Error message */
+        .error-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+            text-align: left;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Success message */
+        .success-message {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #10b981;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 0 auto;
+        }
+
+        .btn.loading .spinner {
+            display: block;
+        }
+
+        .btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .user-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fab fa-facebook-messenger"></i>
+            <span>RDX Bot</span>
+            <span
+                style="font-size: 0.8rem; background: #1877F2; color: white; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">v0.7</span>
+        </div>
+        <nav>
+            <a href="index.html" onclick="playButtonSound()">Home</a>
+            <a href="features.html" onclick="playButtonSound()">Features</a>
+            <a href="commands/index.html" onclick="playButtonSound()">Commands</a>
+            <a href="about.html" onclick="playButtonSound()">About</a>
+            <a href="#" onclick="playButtonSound(); logout(); return false;" style="color: #f02849;"><i
+                    class="fas fa-sign-out-alt"></i>
+                Logout</a>
+            <a href="contact.html" onclick="playButtonSound()">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Menu Toggle Button (3 lines) -->
+    <button class="menu-toggle" onclick="playButtonSound(); toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Right Side Menu Overlay -->
+    <div class="right-menu-overlay" onclick="closeMenu()"></div>
+
+    <!-- Right Side Menu Bar -->
+    <div class="right-menu">
+        <a href="index.html" class="right-menu-item active" onclick="playButtonSound(); closeMenu()">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="features.html" class="right-menu-item" onclick="playButtonSound(); closeMenu()">
+            <i class="fas fa-star"></i>
+            <span>Features</span>
+        </a>
+        <a href="commands/index.html" class="right-menu-item" onclick="playButtonSound(); closeMenu()">
+            <i class="fas fa-terminal"></i>
+            <span>Commands</span>
+        </a>
+        <a href="about.html" class="right-menu-item" onclick="playButtonSound(); closeMenu()">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        <a href="contact.html" class="right-menu-item" onclick="playButtonSound(); closeMenu()">
+            <i class="fas fa-envelope"></i>
+            <span>Contact</span>
+        </a>
+        <a href="#" onclick="playButtonSound(); logout(); closeMenu(); return false;" class="right-menu-item logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fab fa-facebook-messenger"></i> Messenger Automation Bot | Version 0.7
+            </div>
+
+            <h1>Automate Your Messenger<br><span>With RDX Bot</span></h1>
+
+            <p>Powerful automation bot for WhatsApp. Manage messages, auto-reply, broadcast, and more. Join thousands of
+                users today!</p>
+
+            <!-- User Stats -->
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="userCount">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="downloadCount">0</div>
+                    <div class="stat-label">Website Downloads</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="githubCount">0</div>
+                    <div class="stat-label">GitHub Clones</div>
+                </div>
+            </div>
+
+            <!-- Download Buttons -->
+            <div class="btn-group">
+                <a href="#" class="btn btn-download" id="downloadBtn"
+                    onclick="playButtonSound(); handleDownload(event, 'rdx')">
+                    <i class="fas fa-robot"></i>
+                    Download RDX Bot
+                </a>
+                <a href="#" class="btn btn-download" id="c3cDownloadBtn"
+                    onclick="playButtonSound(); handleDownload(event, 'c3c')"
+                    style="background: linear-gradient(135deg, #42b72a, #36a420);">
+                    <i class="fas fa-file-archive"></i>
+                    Download C3C Extension
+                </a>
+                <a href="https://github.com/npnrdx2/RDX-0.7.git" target="_blank" class="btn btn-secondary"
+                    onclick="playButtonSound(); recordGithubClone(event)">
+                    <i class="fab fa-github"></i>
+                    GitHub
+                </a>
+                <a href="features.html" class="btn btn-secondary" onclick="playButtonSound()">
+                    <i class="fas fa-star"></i>
+                    View Features
+                </a>
+                <a href="commands/index.html" class="btn btn-secondary" onclick="playButtonSound()"
+                    style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+                    <i class="fas fa-terminal"></i>
+                    View Commands
+                </a>
+            </div>
+
+            <!-- Login Required Modal -->
+            <div id="loginModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2>Login Required</h2>
+                    <p>Please login or signup to download RDX Bot v0.7</p>
+                    <div class="btn-group" style="margin-top: 1rem;">
+                        <button class="btn btn-download"
+                            onclick="playButtonSound(); showAuthForm('login')">Login</button>
+                        <button class="btn btn-secondary"
+                            onclick="playButtonSound(); showAuthForm('signup')">Signup</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auth Forms Modal -->
+            <div id="authModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeAuthModal()">&times;</span>
+                    <div id="loginFormContainer">
+                        <h2>Login to RDX Bot</h2>
+                        <div class="success-message" id="loginSuccessMessage">
+                            <i class="fas fa-check-circle"></i> <span id="loginSuccessText">Login successful!</span>
+                        </div>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Email">
+                        <p class="error-message" id="loginEmailError">Valid email is required</p>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Password">
+                        <p class="error-message" id="loginPasswordError">Password is required</p>
+                        <button class="btn btn-download" id="loginBtn" onclick="login()" style="width: 100%;">
+                            <span class="btn-text">Login</span>
+                            <div class="spinner"></div>
+                        </button>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">Don't have account? <a href="#"
+                                onclick="playButtonSound(); showAuthForm('signup'); return false;"
+                                style="color: #1877F2;">Signup</a></p>
+                    </div>
+                    <div id="signupFormContainer" style="display: none;">
+                        <h2>Signup for RDX Bot</h2>
+                        <div class="success-message" id="signupSuccessMessage">
+                            <i class="fas fa-check-circle"></i> <span id="signupSuccessText">Account created!</span>
+                        </div>
+                        <input type="text" id="signupUsername" class="form-input" placeholder="Username">
+                        <p class="error-message" id="signupUsernameError">Username is required</p>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="Email">
+                        <p class="error-message" id="signupEmailError">Valid email is required</p>
+                        <input type="password" id="signupPassword" class="form-input"
+                            placeholder="Password (min 6 characters)">
+                        <p class="error-message" id="signupPasswordError">Password must be at least 6 characters</p>
+                        <button class="btn btn-download" id="signupBtn" onclick="signup()" style="width: 100%;">
+                            <span class="btn-text">Signup</span>
+                            <div class="spinner"></div>
+                        </button>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">Already have account? <a href="#"
+                                onclick="playButtonSound(); showAuthForm('login'); return false;"
+                                style="color: #1877F2;">Login</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Modal -->
+            <div id="verificationModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeVerificationModal()">&times;</span>
+                    <h2>Verify Your Email</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">We've sent a verification code to
+                        your email. Please enter it below.</p>
+                    <div class="success-message" id="verifySuccessMessage">
+                        <i class="fas fa-check-circle"></i> <span id="verifySuccessText">Email verified!</span>
+                    </div>
+                    <input type="hidden" id="verifyEmail">
+                    <input type="text" id="verificationCode" class="form-input" placeholder="Enter 6-digit code"
+                        maxlength="6">
+                    <p class="error-message" id="verifyCodeError">Verification code is required</p>
+                    <button class="btn btn-download" id="verifyBtn" onclick="verifyEmail()" style="width: 100%;">
+                        <span class="btn-text">Verify</span>
+                        <div class="spinner"></div>
+                    </button>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        Didn't receive code? <a href="#" onclick="resendCode(); return false;"
+                            style="color: #1877F2;">Resend</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Social Media Links -->
+            <div class="social-links">
+                <a href="https://www.facebook.com/profile.php?id=100009012838085" target="_blank"
+                    class="social-link facebook" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/" target="_blank" class="social-link instagram" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://youtube.com/@rdx-bot-zone?si=07glyrc8s-lSIkK8" target="_blank"
+                    class="social-link youtube" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://wa.me/qr/Q65AI7L4ZOBFO1" target="_blank" class="social-link whatsapp" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://whatsapp.com/channel/0029VbCU9yi4tRroe2Xhwl24" target="_blank"
+                    class="social-link whatsapp-channel" title="Join WhatsApp Channel">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title">How to <span>Use RDX Bot</span></h2>
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Watch this video to learn how to setup and run
+                RDX Bot v0.7</p>
+            <div
+                style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 2rem;">
+                <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                    src="https://www.youtube.com/embed/HpGqqXxeNA8" title="How to use RDX Bot" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <!-- Screenshot Guide -->
+            <h3 style="margin-bottom: 1.5rem;">Follow These Steps:</h3>
+            <img src="https://i.ibb.co/JDRWJbY/In-Shot-20260226-153147015.jpg" alt="RDX Bot Setup Guide"
+                style="width: 100%; border-radius: 20px; border: 1px solid var(--glass-border);">
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title">Why Choose <span>RDX Bot?</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Lightning Fast</h3>
+                <p>Optimized for speed and efficiency. Your automation runs smoothly without any delays.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Secure & Private</h3>
+                <p>Your data is encrypted and secure. We never share your information with anyone.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <h3>Easy to Use</h3>
+                <p>Simple dashboard with intuitive controls. No coding knowledge required.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Real-time Analytics</h3>
+                <p>Track performance with detailed reports and insights about your bot usage.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Get help anytime with our dedicated support team ready to assist you.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <h3>Regular Updates</h3>
+                <p>New features and improvements added regularly to keep your bot up-to-date.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 RDX Bot v0.7. All rights reserved. | Powered by BotHub</p>
+    </footer>
+
+    <script>
+        // ============================================
+        // SOUND EFFECTS
+        // ============================================
+        let buttonSound = null;
+        let loginSound = null;
+        let soundsLoaded = false;
+
+        // Preload sounds
+        function preloadSounds() {
+            try {
+                buttonSound = new Audio('/sounds/buttons.mpeg');
+                loginSound = new Audio('/sounds/login.mpeg');
+                soundsLoaded = true;
+                console.log('Sounds preloaded');
+            } catch(e) {
+                console.log('Error loading sounds:', e);
+            }
+        }
+
+        function playButtonSound() {
+            if (!soundsLoaded) preloadSounds();
+            if (buttonSound) {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.5;
+                buttonSound.play().catch(e => console.log('Button sound error:', e));
+            }
+        }
+
+        function playLoginSound() {
+            if (!soundsLoaded) preloadSounds();
+            if (loginSound) {
+                loginSound.currentTime = 0;
+                loginSound.volume = 0.5;
+                loginSound.play().catch(e => console.log('Login sound error:', e));
+            }
+        }
+
+        // Global click handler for all buttons and links
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            const tag = target.tagName.toLowerCase();
+            const isClickable = tag === 'button' || tag === 'a' || target.closest('button') || target.closest('a');
+            
+            if (isClickable && !target.closest('.no-sound') && !target.closest('.modal')) {
+                playButtonSound();
+            }
+        }, true);
+
+        // Preload sounds on page load
+        window.addEventListener('load', preloadSounds);
+
+        // Download links - LOCAL SERVER LINKS
+        const RDX_BOT_LINK = '/download/rdx';
+        const C3C_EXTENSION_LINK = '/download/c3c';
+
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        let userData = JSON.parse(localStorage.getItem('user')) || null;
+
+        // Check if user is logged in, if not redirect to login
+        if (!userData) {
+            window.location.href = 'login.html';
+        }
+
+        // Welcome Animation on Page Load
+        function showWelcomeAnimation() {
+            // Play login sound immediately when page loads (before animation)
+            const playSound = sessionStorage.getItem('playLoginSound');
+            if (playSound === 'true') {
+                playLoginSound();
+                sessionStorage.removeItem('playLoginSound');
+            }
+
+            // Check if this is a new login (from login page)
+            const isNewLogin = sessionStorage.getItem('isNewLogin');
+
+            if (isNewLogin === 'true') {
+                // Play login success sound when page loads
+                const playSound = sessionStorage.getItem('playLoginSound');
+                if (playSound === 'true') {
+                    playLoginSound();
+                    sessionStorage.removeItem('playLoginSound');
+                }
+
+                // Create welcome overlay
+                const overlay = document.createElement('div');
+                overlay.className = 'welcome-overlay';
+                overlay.innerHTML = `
+                    <div class="logo"><i class="fab fa-facebook-messenger"></i> RDX Bot</div>
+                    <p>Welcome to RDX Bot</p>
+                    <div class="user-welcome">Hello, ${userData.username}!</div>
+                `;
+                document.body.appendChild(overlay);
+
+                // Remove after animation
+                setTimeout(() => {
+                    overlay.remove();
+                    sessionStorage.removeItem('isNewLogin');
+                }, 3000);
+            }
+        }
+
+        // Run welcome animation when page loads
+        window.addEventListener('load', showWelcomeAnimation);
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // ============================================
+        // MENU TOGGLE FUNCTIONS
+        // ============================================
+        function toggleMenu() {
+            const menu = document.querySelector('.right-menu');
+            const overlay = document.querySelector('.right-menu-overlay');
+            const toggle = document.querySelector('.menu-toggle');
+
+            menu.classList.toggle('open');
+            overlay.classList.toggle('show');
+            toggle.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            const menu = document.querySelector('.right-menu');
+            const overlay = document.querySelector('.right-menu-overlay');
+            const toggle = document.querySelector('.menu-toggle');
+
+            menu.classList.remove('open');
+            overlay.classList.remove('show');
+            toggle.classList.remove('active');
+        }
+
+        // Close menu on back button
+        window.onpopstate = function () {
+            closeMenu();
+        };
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function (e) {
+            const menu = document.querySelector('.right-menu');
+            const toggle = document.querySelector('.menu-toggle');
+            const overlay = document.querySelector('.right-menu-overlay');
+
+            if (menu.classList.contains('open')) {
+                if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+                    closeMenu();
+                }
+            }
+        });
+
+        // ============================================
+        // STAT ITEMS CLICK ANIMATION
+        // ============================================
+        document.querySelectorAll('.stat-item').forEach(stat => {
+            stat.addEventListener('click', function () {
+                this.classList.add('glow');
+                setTimeout(() => {
+                    this.classList.remove('glow');
+                }, 600);
+            });
+        });
+
+        // ============================================
+        // FETCH COUNTS
+        // ============================================
+        async function fetchCounts() {
+            try {
+                // Fetch user count
+                const userResponse = await fetch('/api/users/count');
+                const userData = await userResponse.json();
+                if (userData.success) {
+                    animateCounter('userCount', userData.count);
+                }
+
+                // Fetch download count
+                const downloadResponse = await fetch('/api/downloads/count');
+                const downloadData = await downloadResponse.json();
+                if (downloadData.success) {
+                    animateCounter('downloadCount', downloadData.total);
+                }
+
+                // Fetch GitHub clone count
+                const githubResponse = await fetch('/api/github/count');
+                const githubData = await githubResponse.json();
+                if (githubData.success) {
+                    animateCounter('githubCount', githubData.count);
+                }
+            } catch (error) {
+                console.error('Error fetching counts:', error);
+            }
+        }
+
+        // Animate counter from 0 to target
+        function animateCounter(elementId, target) {
+            const element = document.getElementById(elementId);
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 30);
+        }
+
+        // ============================================
+        // RECORD DOWNLOADS & GITHUB CLONES
+        // ============================================
+        async function recordDownload(type) {
+            try {
+                await fetch('/api/downloads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userData ? userData.id : null,
+                        downloadType: type || 'rdx'
+                    })
+                });
+
+                // Refresh download count
+                const downloadResponse = await fetch('/api/downloads/count');
+                const downloadData = await downloadResponse.json();
+                if (downloadData.success) {
+                    animateCounter('downloadCount', downloadData.total);
+                }
+            } catch (error) {
+                console.error('Error recording download:', error);
+            }
+        }
+
+        async function recordGithubClone(event) {
+            // Allow the link to open first
+            if (event && event.button === 0) {
+                // Small delay to let navigation happen
+                setTimeout(async () => {
+                    try {
+                        await fetch('/api/github/clones', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                userId: userData ? userData.id : null
+                            })
+                        });
+
+                        // Refresh GitHub count
+                        const githubResponse = await fetch('/api/github/count');
+                        const githubData = await githubResponse.json();
+                        if (githubData.success) {
+                            animateCounter('githubCount', githubData.count);
+                        }
+                    } catch (error) {
+                        console.error('Error recording GitHub clone:', error);
+                    }
+                }, 500);
+            }
+        }
+
+        // ============================================
+        // CHECK LOGIN STATUS
+        // ============================================
+        function checkLoginStatus() {
+            if (userData) {
+                updateUIForLoggedInUser();
+            }
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const c3cDownloadBtn = document.getElementById('c3cDownloadBtn');
+
+            if (downloadBtn) {
+                downloadBtn.href = RDX_BOT_LINK;
+                downloadBtn.target = '_blank';
+                downloadBtn.onclick = function (event) {
+                    event.preventDefault();
+                    recordDownload('rdx');
+                    window.open(RDX_BOT_LINK, '_blank');
+                };
+            }
+
+            if (c3cDownloadBtn) {
+                c3cDownloadBtn.href = C3C_EXTENSION_LINK;
+                c3cDownloadBtn.target = '_blank';
+                c3cDownloadBtn.onclick = function (event) {
+                    event.preventDefault();
+                    recordDownload('c3c');
+                    window.open(C3C_EXTENSION_LINK, '_blank');
+                };
+            }
+        }
+
+        // ============================================
+        // HANDLE DOWNLOAD CLICK
+        // ============================================
+        function handleDownload(event, type) {
+            if (!userData) {
+                event.preventDefault();
+                // Store which download button was clicked
+                localStorage.setItem('pendingDownloadType', type);
+                document.getElementById('loginModal').style.display = 'flex';
+            } else {
+                event.preventDefault();
+                if (type === 'rdx') {
+                    recordDownload('rdx');
+                    window.open(RDX_BOT_LINK, '_blank');
+                } else if (type === 'c3c') {
+                    recordDownload('c3c');
+                    window.open(C3C_EXTENSION_LINK, '_blank');
+                }
+            }
+        }
+
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        function closeModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function showAuthForm(type) {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('authModal').style.display = 'flex';
+            clearErrors();
+
+            if (type === 'login') {
+                document.getElementById('loginFormContainer').style.display = 'block';
+                document.getElementById('signupFormContainer').style.display = 'none';
+            } else {
+                document.getElementById('loginFormContainer').style.display = 'none';
+                document.getElementById('signupFormContainer').style.display = 'block';
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function clearErrors() {
+            // Clear all error messages
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.form-input').forEach(el => el.style.borderColor = '');
+            document.getElementById('loginSuccessMessage').classList.remove('show');
+            document.getElementById('signupSuccessMessage').classList.remove('show');
+        }
+
+        // ============================================
+        // VALIDATION
+        // ============================================
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.style.borderColor = '#ef4444';
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        // ============================================
+        // LOGIN FUNCTION
+        // ============================================
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+
+            // Validation
+            let isValid = true;
+
+            if (!email || !isValidEmail(email)) {
+                showError('loginEmail', 'loginEmailError', 'Valid email is required');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('loginPassword', 'loginPasswordError', 'Password is required');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Show loading
+            loginBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Check if verification is required
+                    if (data.requiresVerification) {
+                        document.getElementById('loginSuccessText').textContent = 'Please verify your email first';
+                        document.getElementById('loginSuccessMessage').classList.add('show');
+
+                        // Show verification modal
+                        setTimeout(() => {
+                            document.getElementById('verifyEmail').value = data.email;
+                            document.getElementById('loginSuccessMessage').classList.remove('show');
+                            document.getElementById('verificationModal').style.display = 'flex';
+                        }, 1500);
+                        return;
+                    }
+
+                    userData = data.user;
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    // Set flag for sound to play on next page
+                    sessionStorage.setItem('playLoginSound', 'true');
+
+                    // Show success
+                    document.getElementById('loginSuccessText').textContent = data.message;
+                    document.getElementById('loginSuccessMessage').classList.add('show');
+
+                    setTimeout(() => {
+                        closeAuthModal();
+                        updateUIForLoggedInUser();
+                        // Check if there was a pending download
+                        const pendingType = localStorage.getItem('pendingDownloadType');
+                        localStorage.removeItem('pendingDownloadType');
+
+                        if (pendingType === 'c3c') {
+                            recordDownload('c3c');
+                            window.open(C3C_EXTENSION_LINK, '_blank');
+                        } else {
+                            recordDownload('rdx');
+                            window.open(RDX_BOT_LINK, '_blank');
+                        }
+                    }, 3000);
+                } else {
+                    showError('loginEmail', 'loginEmailError', data.message);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('loginEmail', 'loginEmailError', 'Server error. Please try again.');
+            } finally {
+                loginBtn.classList.remove('loading');
+            }
+        }
+
+        // ============================================
+        // SIGNUP FUNCTION
+        // ============================================
+        async function signup() {
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const signupBtn = document.getElementById('signupBtn');
+
+            // Validation
+            let isValid = true;
+
+            if (!username) {
+                showError('signupUsername', 'signupUsernameError', 'Username is required');
+                isValid = false;
+            }
+
+            if (!email || !isValidEmail(email)) {
+                showError('signupEmail', 'signupEmailError', 'Valid email is required');
+                isValid = false;
+            }
+
+            if (!password || password.length < 6) {
+                showError('signupPassword', 'signupPasswordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Show loading
+            signupBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Check if verification is required
+                    if (data.requiresVerification) {
+                        document.getElementById('signupSuccessText').textContent = data.message;
+                        document.getElementById('signupSuccessMessage').classList.add('show');
+
+                        // Show verification modal
+                        setTimeout(() => {
+                            closeAuthModal();
+                            document.getElementById('verifyEmail').value = email;
+                            document.getElementById('verificationModal').style.display = 'flex';
+                            document.getElementById('signupSuccessMessage').classList.remove('show');
+                        }, 1500);
+                    } else {
+                        userData = data.user;
+                        localStorage.setItem('user', JSON.stringify(data.user));
+
+                        // Set flag for sound to play on next page
+                        sessionStorage.setItem('playLoginSound', 'true');
+
+                        // Show success
+                        document.getElementById('signupSuccessText').textContent = data.message;
+                        document.getElementById('signupSuccessMessage').classList.add('show');
+
+                        setTimeout(() => {
+                            closeAuthModal();
+                            updateUIForLoggedInUser();
+                            // Check if there was a pending download
+                            const pendingType = localStorage.getItem('pendingDownloadType');
+                            localStorage.removeItem('pendingDownloadType');
+
+                            if (pendingType === 'c3c') {
+                                recordDownload('c3c');
+                                window.open(C3C_EXTENSION_LINK, '_blank');
+                            } else {
+                                recordDownload('rdx');
+                                window.open(RDX_BOT_LINK, '_blank');
+                            }
+                        }, 3000);
+                    }
+                } else {
+                    showError('signupEmail', 'signupEmailError', data.message);
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showError('signupEmail', 'signupEmailError', 'Server error. Please try again.');
+            } finally {
+                signupBtn.classList.remove('loading');
+            }
+        }
+
+        // ============================================
+        // VERIFICATION FUNCTIONS
+        // ============================================
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            document.getElementById('verificationCode').value = '';
+            document.getElementById('verifyCodeError').classList.remove('show');
+            document.getElementById('verifySuccessMessage').classList.remove('show');
+        }
+
+        async function verifyEmail() {
+            const email = document.getElementById('verifyEmail').value;
+            const code = document.getElementById('verificationCode').value.trim();
+            const verifyBtn = document.getElementById('verifyBtn');
+
+            if (!code || code.length !== 6) {
+                showError('verificationCode', 'verifyCodeError', 'Please enter the 6-digit code');
+                return;
+            }
+
+            verifyBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Set flag for sound to play if needed
+                    sessionStorage.setItem('playLoginSound', 'true');
+
+                    document.getElementById('verifySuccessText').textContent = data.message;
+                    document.getElementById('verifySuccessMessage').classList.add('show');
+
+                    setTimeout(() => {
+                        closeVerificationModal();
+                        showAuthForm('login');
+                    }, 2000);
+                } else {
+                    showError('verificationCode', 'verifyCodeError', data.message);
+                }
+            } catch (error) {
+                console.error('Verify error:', error);
+                showError('verificationCode', 'verifyCodeError', 'Server error. Please try again.');
+            } finally {
+                verifyBtn.classList.remove('loading');
+            }
+        }
+
+        async function resendCode() {
+            const email = document.getElementById('verifyEmail').value;
+
+            try {
+                const response = await fetch('/api/resend-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('New verification code sent to your email!');
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Resend code error:', error);
+                alert('Error sending code. Please try again.');
+            }
+        }
+
+        // ============================================
+        // INITIALIZE
+        // ============================================
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const loginModal = document.getElementById('loginModal');
+            const authModal = document.getElementById('authModal');
+            if (event.target == loginModal) {
+                closeModal();
+            }
+            if (event.target == authModal) {
+                closeAuthModal();
+            }
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 25;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 10 + 5) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = (Math.random() * 15) + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize on page load
+        fetchCounts();
+        checkLoginStatus();
+        createParticles();
+    </script>
+</body>
+
+</html>

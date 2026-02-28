@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDX Bot - Login</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary-color: #1877F2;
+            --primary-hover: #166FE5;
+            --secondary-color: #42b72a;
+            --accent-color: #f02849;
+            --success-color: #10b981;
+            --dark-bg: #0a0a1a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--dark-bg);
+            background-image:
+                radial-gradient(ellipse at top left, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at top right, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+                linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Login Container */
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Left Side - Branding */
+        .login-branding {
+            flex: 1;
+            background: linear-gradient(135deg, #1877F2, #42b72a);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-branding::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-branding .logo {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-branding .logo i {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+
+        .login-branding h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-branding p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 300px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-branding .version {
+            margin-top: 30px;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Right Side - Form */
+        .login-form-section {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-toggle button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-toggle .active {
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            color: white;
+        }
+
+        .form-toggle .inactive {
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--card-border);
+        }
+
+        .form-toggle .inactive:hover {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .form-container h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #1877F2, #42b72a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: #1877F2;
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #10b981;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #1877F2, #166FE5);
+            color: white;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .btn.loading .spinner {
+            display: block;
+        }
+
+        .btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Contacts Section */
+        .contacts-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .contacts-section h3 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: var(--glass-bg);
+            transform: translateY(-2px);
+        }
+
+        /* User Sidebar - Shows after login */
+        .user-sidebar {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-sidebar.show {
+            display: block;
+        }
+
+        .user-sidebar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .user-sidebar .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1877F2, #42b72a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-sidebar .user-details {
+            flex: 1;
+        }
+
+        .user-sidebar .username {
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .user-sidebar .user-status {
+            font-size: 0.75rem;
+            color: #10b981;
+        }
+
+        .user-sidebar .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(240, 40, 73, 0.2);
+            border: 1px solid rgba(240, 40, 73, 0.3);
+            border-radius: 10px;
+            color: #f02849;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .user-sidebar .logout-btn:hover {
+            background: rgba(240, 40, 73, 0.3);
+        }
+
+        .contact-item i {
+            font-size: 1.2rem;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .contact-item.facebook i {
+            background: #1877F2;
+        }
+
+        .contact-item.instagram i {
+            background: linear-gradient(45deg, #f09433, #dc2743);
+        }
+
+        .contact-item.youtube i {
+            background: #FF0000;
+        }
+
+        .contact-item.whatsapp i {
+            background: #25D366;
+        }
+
+        .contact-item span {
+            font-size: 0.85rem;
+        }
+
+        /* Email restriction notice */
+        .email-notice {
+            background: rgba(24, 119, 242, 0.1);
+            border: 1px solid rgba(24, 119, 242, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .email-notice i {
+            color: #1877F2;
+            margin-right: 5px;
+        }
+
+        /* Subscribe Required Section */
+        .subscribe-required {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .subscribe-required.hidden {
+            display: none;
+        }
+
+        .subscribe-required h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .subscribe-required p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .subscribe-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(255, 0, 0, 0.7);
+            }
+        }
+
+        .subscribe-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #FF1111, #DD0000);
+        }
+
+        .subscribe-btn i {
+            font-size: 1.3rem;
+        }
+
+        .subscribe-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+            padding: 12px 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-check:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .subscribe-check input {
+            display: none;
+        }
+
+        .subscribe-check .check-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-check.checked .check-icon {
+            background: var(--success-color);
+        }
+
+        .subscribe-check.checked .check-icon::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+
+        .subscribe-check span {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .strength-step {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .strength-step.active {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .strength-step.active.capital {
+            background: #10b981;
+        }
+
+        .strength-step.active.lowercase {
+            background: #22c55e;
+        }
+
+        .strength-step.active.number {
+            background: #84cc16;
+        }
+
+        .strength-step.active.symbol {
+            background: #ef4444;
+        }
+
+        .password-requirements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .requirement.met {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .requirement i {
+            font-size: 0.65rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                margin: 20px;
+                min-height: auto;
+            }
+
+            .login-branding {
+                padding: 30px;
+            }
+
+            .login-branding .logo {
+                font-size: 2.5rem;
+            }
+
+            .login-branding h1 {
+                font-size: 1.8rem;
+            }
+
+            .login-form-section {
+                padding: 30px 20px;
+            }
+
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: fadeInUp 0.3s ease-out;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="login-branding">
+            <div class="logo">
+                <i class="fab fa-facebook-messenger"></i>
+                <div>RDX Bot</div>
+            </div>
+            <h1>Welcome Back</h1>
+            <p>Automate your Messenger with the most powerful bot. Manage messages, auto-reply, broadcast, and more!</p>
+            <div class="version">
+                <i class="fas fa-star"></i> Version 0.7
+            </div>
+        </div>
+
+        <!-- Right Side - Form -->
+        <div class="login-form-section">
+            <!-- Form Toggle -->
+            <div class="form-toggle">
+                <button id="loginToggle" class="active" onclick="showForm('login')">Login</button>
+                <button id="signupToggle" class="inactive" onclick="showForm('signup')">Signup</button>
+            </div>
+
+            <!-- Email Notice -->
+            <div class="email-notice">
+                <i class="fas fa-info-circle"></i>
+                Only <strong>@gmail.com</strong> and <strong>@outlook.com</strong> emails are allowed
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="form-container active">
+                <h2>Login to RDX Bot</h2>
+                <div class="success-message" id="loginSuccessMessage">
+                    <i class="fas fa-check-circle"></i> <span id="loginSuccessText">Login successful!</span>
+                </div>
+                <input type="text" id="loginEmail" class="form-input" placeholder="Username or Email">
+                <p class="error-message" id="loginEmailError">Username or Email is required</p>
+                <input type="password" id="loginPassword" class="form-input" placeholder="Password">
+                <p class="error-message" id="loginPasswordError">Password is required</p>
+                <button class="btn btn-download" id="loginBtn" onclick="login()">
+                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+
+            <!-- Subscribe Required for Signup -->
+            <div id="subscribeRequired" class="subscribe-required">
+                <h2><i class="fab fa-youtube"></i> Subscribe to Our YouTube Channel</h2>
+                <p>Please subscribe to our YouTube channel to complete the signup process. This helps us grow our
+                    community!</p>
+                <a href="https://youtube.com/@rdx-bot-zone?si=ywhobk9TAFCcz39Z" target="_blank" class="subscribe-btn"
+                    onclick="afterSubscribeClick()">
+                    <i class="fab fa-youtube"></i> Subscribe Now
+                </a>
+                <div id="subscribeCheckboxContainer" style="display:none;">
+                    <label class="subscribe-check" onclick="toggleSubscribeCheck()">
+                        <input type="checkbox" id="subscribeCheckbox">
+                        <div class="check-icon"></div>
+                        <span>I have subscribed to the channel</span>
+                    </label>
+                </div>
+                <p class="error-message show" id="subscribeError" style="display:none;">Please subscribe to our YouTube
+                    channel first!</p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="form-container">
+                <h2>Create Account</h2>
+                <div class="success-message" id="signupSuccessMessage">
+                    <i class="fas fa-check-circle"></i> <span id="signupSuccessText">Account created!</span>
+                </div>
+                <input type="text" id="signupUsername" class="form-input" placeholder="Username">
+                <p class="error-message" id="signupUsernameError">Username is required</p>
+                <input type="email" id="signupEmail" class="form-input" placeholder="Email (gmail.com or outlook.com)">
+                <p class="error-message" id="signupEmailError">Valid gmail/outlook email is required</p>
+                <input type="password" id="signupPassword" class="form-input" placeholder="Password"
+                    oninput="checkPasswordStrength()">
+
+                <!-- Password Strength Indicator -->
+                <div class="password-strength">
+                    <div class="strength-step" id="step1"></div>
+                    <div class="strength-step" id="step2"></div>
+                    <div class="strength-step" id="step3"></div>
+                    <div class="strength-step" id="step4"></div>
+                </div>
+
+                <!-- Password Requirements -->
+                <div class="password-requirements">
+                    <div class="requirement" id="req-capital"><i class="fas fa-circle"></i> Capital Letter</div>
+                    <div class="requirement" id="req-lowercase"><i class="fas fa-circle"></i> Small Letter</div>
+                    <div class="requirement" id="req-number"><i class="fas fa-circle"></i> Number</div>
+                    <div class="requirement" id="req-symbol"><i class="fas fa-circle"></i> Symbol (!@#$%^&*)</div>
+                </div>
+
+                <p class="error-message" id="signupPasswordError">Password must meet all requirements</p>
+                <button class="btn btn-download" id="signupBtn" onclick="signup()">
+                    <span class="btn-text"><i class="fas fa-user-plus"></i> Signup</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+
+            <!-- Contacts Section -->
+            <div class="contacts-section">
+                <h3><i class="fas fa-address-book"></i> Contact Us</h3>
+                <div class="contacts-grid">
+                    <a href="https://www.facebook.com/profile.php?id=100009012838085" target="_blank"
+                        class="contact-item facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="contact-item instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://youtube.com/@rdx-bot-zone?si=07glyrc8s-lSIkK8" target="_blank"
+                        class="contact-item youtube">
+                        <i class="fab fa-youtube"></i>
+                        <span>YouTube</span>
+                    </a>
+                    <a href="https://wa.me/qr/Q65AI7L4ZOBFO1" target="_blank" class="contact-item whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="https://whatsapp.com/channel/0029VbCU9yi4tRroe2Xhwl24" target="_blank"
+                        class="contact-item whatsapp" title="Join WhatsApp Channel">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp Channel</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeVerificationModal()">&times;</span>
+            <h2><i class="fas fa-envelope"></i> Verify Your Email</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">We've sent a verification code to your
+                email. Please enter it below.</p>
+            <div class="success-message" id="verifySuccessMessage">
+                <i class="fas fa-check-circle"></i> <span id="verifySuccessText">Email verified!</span>
+            </div>
+            <input type="hidden" id="verifyEmail">
+            <input type="text" id="verificationCode" class="form-input" placeholder="Enter 6-digit code" maxlength="6"
+                style="text-align: center; letter-spacing: 5px; font-size: 1.2rem;">
+            <p class="error-message" id="verifyCodeError">Verification code is required</p>
+            <button class="btn btn-download" id="verifyBtn" onclick="verifyEmail()">
+                <span class="btn-text"><i class="fas fa-check"></i> Verify</span>
+                <div class="spinner"></div>
+            </button>
+            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                Didn't receive code? <a href="#" onclick="resendCode(); return false;"
+                    style="color: #1877F2;">Resend</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- User Sidebar - Shows after login -->
+    <div id="userSidebar" class="user-sidebar">
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-details">
+                <div class="username" id="sidebarUsername">User</div>
+                <div class="user-status"><i class="fas fa-circle"></i> Online</div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="playButtonSound(); logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+
+    <script>
+        // ============================================
+        // SOUND EFFECTS
+        // ============================================
+        let buttonSound = null;
+        let loginSound = null;
+        let soundsLoaded = false;
+
+        // Preload sounds
+        function preloadSounds() {
+            try {
+                buttonSound = new Audio('/sounds/buttons.mpeg');
+                loginSound = new Audio('/sounds/login.mpeg');
+                soundsLoaded = true;
+            } catch(e) {
+                console.log('Error loading sounds:', e);
+            }
+        }
+
+        function playButtonSound() {
+            if (!soundsLoaded) preloadSounds();
+            if (buttonSound) {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.5;
+                buttonSound.play().catch(e => console.log('Button sound error:', e));
+            }
+        }
+
+        function playLoginSound() {
+            if (!soundsLoaded) preloadSounds();
+            if (loginSound) {
+                loginSound.currentTime = 0;
+                loginSound.volume = 0.5;
+                loginSound.play().catch(e => console.log('Login sound error:', e));
+            }
+        }
+
+        // Global click handler for all buttons and links
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            const tag = target.tagName.toLowerCase();
+            const isClickable = tag === 'button' || tag === 'a' || target.closest('button') || target.closest('a');
+            
+            if (isClickable && !target.closest('.no-sound')) {
+                playButtonSound();
+            }
+        }, true);
+
+        // Preload sounds on page load
+        window.addEventListener('load', preloadSounds);
+
+        // ============================================
+        // FORM TOGGLE
+        // ============================================
+        function showForm(form) {
+            playButtonSound();
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const loginToggle = document.getElementById('loginToggle');
+            const signupToggle = document.getElementById('signupToggle');
+            const subscribeRequired = document.getElementById('subscribeRequired');
+
+            if (form === 'login') {
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                loginToggle.classList.add('active');
+                loginToggle.classList.remove('inactive');
+                signupToggle.classList.add('inactive');
+                signupToggle.classList.remove('active');
+                subscribeRequired.classList.add('hidden');
+            } else {
+                // Show subscribe required first for signup
+                loginForm.classList.remove('active');
+                loginToggle.classList.add('inactive');
+                loginToggle.classList.remove('active');
+                signupToggle.classList.add('active');
+                signupToggle.classList.remove('inactive');
+
+                // Check if user has subscribed
+                const checkbox = document.getElementById('subscribeCheckbox');
+                if (checkbox.checked) {
+                    signupForm.classList.add('active');
+                    subscribeRequired.classList.add('hidden');
+                } else {
+                    signupForm.classList.remove('active');
+                    subscribeRequired.classList.remove('hidden');
+                }
+            }
+            clearErrors();
+        }
+
+        // ============================================
+        // SUBSCRIBE CHECKBOX
+        // ============================================
+        function toggleSubscribeCheck() {
+            // Prevent checking if user hasn't clicked subscribe button
+            if (!hasClickedSubscribe) {
+                return;
+            }
+
+            const checkbox = document.getElementById('subscribeCheckbox');
+            const checkLabel = document.querySelector('.subscribe-check');
+            const signupForm = document.getElementById('signupForm');
+            const subscribeRequired = document.getElementById('subscribeRequired');
+            const subscribeError = document.getElementById('subscribeError');
+
+            checkbox.checked = !checkbox.checked;
+
+            if (checkbox.checked) {
+                checkLabel.classList.add('checked');
+                // Show signup form after subscribing
+                signupForm.classList.add('active');
+                subscribeRequired.classList.add('hidden');
+                // Hide error message
+                subscribeError.style.display = 'none';
+                subscribeError.classList.remove('show');
+                playButtonSound();
+            } else {
+                checkLabel.classList.remove('checked');
+                signupForm.classList.remove('active');
+            }
+        }
+
+        // Show checkbox after clicking subscribe button
+        let hasClickedSubscribe = false;
+
+        function afterSubscribeClick() {
+            hasClickedSubscribe = true;
+            setTimeout(() => {
+                document.getElementById('subscribeCheckboxContainer').style.display = 'block';
+            }, 500);
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.form-input').forEach(el => el.style.borderColor = '');
+            document.getElementById('loginSuccessMessage').classList.remove('show');
+            document.getElementById('signupSuccessMessage').classList.remove('show');
+        }
+
+        // ============================================
+        // EMAIL VALIDATION
+        // ============================================
+        function isValidEmail(email) {
+            // Only allow gmail.com and outlook.com
+            const emailRegex = /^[^\s@]+@(gmail\.com|outlook\.com)$/i;
+            return emailRegex.test(email);
+        }
+
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.style.borderColor = '#ef4444';
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        // ============================================
+        // PASSWORD STRENGTH CHECKER
+        // ============================================
+        function checkPasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+
+            // Check requirements
+            const hasCapital = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+            // Update requirement indicators
+            const reqCapital = document.getElementById('req-capital');
+            const reqLowercase = document.getElementById('req-lowercase');
+            const reqNumber = document.getElementById('req-number');
+            const reqSymbol = document.getElementById('req-symbol');
+
+            if (hasCapital) {
+                reqCapital.classList.add('met');
+                reqCapital.innerHTML = '<i class="fas fa-check-circle"></i> Capital Letter';
+            } else {
+                reqCapital.classList.remove('met');
+                reqCapital.innerHTML = '<i class="fas fa-circle"></i> Capital Letter';
+            }
+
+            if (hasLowercase) {
+                reqLowercase.classList.add('met');
+                reqLowercase.innerHTML = '<i class="fas fa-check-circle"></i> Small Letter';
+            } else {
+                reqLowercase.classList.remove('met');
+                reqLowercase.innerHTML = '<i class="fas fa-circle"></i> Small Letter';
+            }
+
+            if (hasNumber) {
+                reqNumber.classList.add('met');
+                reqNumber.innerHTML = '<i class="fas fa-check-circle"></i> Number';
+            } else {
+                reqNumber.classList.remove('met');
+                reqNumber.innerHTML = '<i class="fas fa-circle"></i> Number';
+            }
+
+            if (hasSymbol) {
+                reqSymbol.classList.add('met');
+                reqSymbol.innerHTML = '<i class="fas fa-check-circle"></i> Symbol (!@#$%^&*)';
+            } else {
+                reqSymbol.classList.remove('met');
+                reqSymbol.innerHTML = '<i class="fas fa-circle"></i> Symbol (!@#$%^&*)';
+            }
+
+            // Update strength steps
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const step4 = document.getElementById('step4');
+
+            // Reset all steps
+            step1.className = 'strength-step';
+            step2.className = 'strength-step';
+            step3.className = 'strength-step';
+            step4.className = 'strength-step';
+
+            // Count met requirements
+            let metCount = 0;
+            if (hasCapital) { step1.classList.add('active', 'capital'); metCount++; }
+            if (hasLowercase) { step2.classList.add('active', 'lowercase'); metCount++; }
+            if (hasNumber) { step3.classList.add('active', 'number'); metCount++; }
+            if (hasSymbol) { step4.classList.add('active', 'symbol'); metCount++; }
+
+            return hasCapital && hasLowercase && hasNumber && hasSymbol;
+        }
+
+        // ============================================
+        // LOGIN FUNCTION
+        // ============================================
+        async function login() {
+            const loginInput = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+
+            // Validation
+            let isValid = true;
+
+            if (!loginInput) {
+                showError('loginEmail', 'loginEmailError', 'Username or Email is required');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('loginPassword', 'loginPasswordError', 'Password is required');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            loginBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loginInput, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Check if verification is required
+                    if (data.requiresVerification) {
+                        document.getElementById('loginSuccessText').textContent = 'Please verify your email first';
+                        document.getElementById('loginSuccessMessage').classList.add('show');
+
+                        setTimeout(() => {
+                            document.getElementById('verifyEmail').value = data.email;
+                            document.getElementById('loginSuccessMessage').classList.remove('show');
+                            document.getElementById('verificationModal').style.display = 'flex';
+                        }, 1500);
+                        return;
+                    }
+
+                    // Save user and redirect to home
+                    // Set flag for sound to play on next page
+                    sessionStorage.setItem('playLoginSound', 'true');
+
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    // Set flag for welcome animation
+                    sessionStorage.setItem('isNewLogin', 'true');
+
+                    // Redirect to home page
+                    window.location.href = '/home';
+                } else {
+                    showError('loginEmail', 'loginEmailError', data.message);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('loginEmail', 'loginEmailError', 'Server error. Please try again.');
+            } finally {
+                loginBtn.classList.remove('loading');
+            }
+        }
+
+        // ============================================
+        // SIGNUP FUNCTION
+        // ============================================
+        async function signup() {
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const signupBtn = document.getElementById('signupBtn');
+            const subscribeCheckbox = document.getElementById('subscribeCheckbox');
+
+            // Check if user has subscribed (MANDATORY)
+            if (!subscribeCheckbox.checked) {
+                // Show subscribe section
+                document.getElementById('signupForm').classList.remove('active');
+                document.getElementById('subscribeRequired').classList.remove('hidden');
+                // Show error message
+                const subscribeError = document.getElementById('subscribeError');
+                subscribeError.style.display = 'block';
+                subscribeError.classList.add('show');
+                return;
+            }
+
+            // Check password strength
+            const isPasswordStrong = checkPasswordStrength();
+
+            // Validation
+            let isValid = true;
+
+            if (!username) {
+                showError('signupUsername', 'signupUsernameError', 'Username is required');
+                isValid = false;
+            }
+
+            if (!email || !isValidEmail(email)) {
+                showError('signupEmail', 'signupEmailError', 'Only gmail.com and outlook.com emails are allowed');
+                isValid = false;
+            }
+
+            if (!password || !isPasswordStrong) {
+                showError('signupPassword', 'signupPasswordError', 'Password must have capital, small letter, number and symbol');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            signupBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Set flag for sound to play on next page
+                    sessionStorage.setItem('playLoginSound', 'true');
+
+                    // Save user and show sidebar
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    document.getElementById('signupSuccessText').textContent = 'Account created successfully!';
+                    document.getElementById('signupSuccessMessage').classList.add('show');
+
+                    // Set flag for welcome animation
+                    sessionStorage.setItem('isNewLogin', 'true');
+
+                    // Redirect to home page with animation
+                    setTimeout(() => {
+                        window.location.href = '/home';
+                    }, 3000);
+                } else {
+                    showError('signupEmail', 'signupEmailError', data.message);
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showError('signupEmail', 'signupEmailError', 'Server error. Please try again.');
+            } finally {
+                signupBtn.classList.remove('loading');
+            }
+        }
+
+        // ============================================
+        // VERIFICATION FUNCTIONS
+        // ============================================
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            document.getElementById('verificationCode').value = '';
+            document.getElementById('verifyCodeError').classList.remove('show');
+            document.getElementById('verifySuccessMessage').classList.remove('show');
+        }
+
+        async function verifyEmail() {
+            const email = document.getElementById('verifyEmail').value;
+            const code = document.getElementById('verificationCode').value.trim();
+            const verifyBtn = document.getElementById('verifyBtn');
+
+            if (!code || code.length !== 6) {
+                showError('verificationCode', 'verifyCodeError', 'Please enter the 6-digit code');
+                return;
+            }
+
+            verifyBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Set flag for sound to play on next page
+                    sessionStorage.setItem('playLoginSound', 'true');
+
+                    document.getElementById('verifySuccessText').textContent = data.message;
+                    document.getElementById('verifySuccessMessage').classList.add('show');
+
+                    setTimeout(() => {
+                        closeVerificationModal();
+                        showForm('login');
+                    }, 2000);
+                } else {
+                    showError('verificationCode', 'verifyCodeError', data.message);
+                }
+            } catch (error) {
+                console.error('Verify error:', error);
+                showError('verificationCode', 'verifyCodeError', 'Server error. Please try again.');
+            } finally {
+                verifyBtn.classList.remove('loading');
+            }
+        }
+
+        async function resendCode() {
+            const email = document.getElementById('verifyEmail').value;
+
+            try {
+                const response = await fetch('/api/resend-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('New verification code sent to your email!');
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Resend code error:', error);
+                alert('Error sending code. Please try again.');
+            }
+        }
+
+        // Check if already logged in
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData) {
+            showUserSidebar(userData);
+        }
+
+        // Show user sidebar function
+        function showUserSidebar(user) {
+            document.getElementById('sidebarUsername').textContent = user.username;
+            document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+            document.getElementById('userSidebar').classList.add('show');
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user');
+            document.getElementById('userSidebar').classList.remove('show');
+            showForm('login');
+        }
+    </script>
+</body>
+
+</html>
